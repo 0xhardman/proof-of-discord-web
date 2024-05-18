@@ -22,6 +22,7 @@ export const SingleLineInput: React.FC<{
 
 const InputContainer = styled(Col)`
   gap: 8px;
+  margin-top:20px;
 `;
 
 const Input = styled.input`

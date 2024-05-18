@@ -4,8 +4,10 @@ import { useDragAndDrop } from '../hooks/useDragAndDrop';
 
 const DragAndDropTextBoxWrapper = styled.div`
 	display: flex;
+	height:120px;
 	flex-direction: column;
 	align-items: center;
+	justify-content: center;
 	border: 2px dashed #ccc;
 	padding: 20px;
 `;
@@ -14,8 +16,8 @@ type Props = {
 	onFileDrop: (file: File) => void;
 };
 
-const DragAndDropTextBox: React.FC<Props> = ({onFileDrop}) => {
-    const {
+const DragAndDropTextBox: React.FC<Props> = ({ onFileDrop }) => {
+	const {
 		dragging,
 		handleDragEnter,
 		handleDragLeave,

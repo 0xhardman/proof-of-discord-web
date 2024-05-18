@@ -24,4 +24,6 @@ export const Button = styled.button`
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  margin-top:20px;
 `;

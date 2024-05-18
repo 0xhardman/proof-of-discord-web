@@ -6,7 +6,6 @@ import { Col } from "./Layout";
 export const LabeledTextArea: React.FC<{
   style?: CSSProperties;
   className?: string;
-  label: string;
   value: string;
   warning?: string;
   warningColor?: string;
@@ -20,44 +19,40 @@ export const LabeledTextArea: React.FC<{
   warningColor,
   disabled,
   disabledReason,
-  label,
   value,
   onChange,
   className,
   secret,
 }) => {
-  return (
-    <LabeledTextAreaContainer
-      className={_.compact(["labeledTextAreaContainer", className]).join(" ")}
-    >
-      <Label>{label}</Label>
-      {warning && (
-        <span className="warning" style={{ color: warningColor }}>
-          {warning}
-        </span>
-      )}
-      <TextArea
-        style={style}
-        aria-label={label} 
-        title={disabled ? disabledReason : ""}
-        disabled={disabled}
-        value={value}
-        onChange={onChange}
-      />
+    return (
+      <LabeledTextAreaContainer
+        className={_.compact(["labeledTextAreaContainer", className]).join(" ")}
+      >
+        {warning && (
+          <span className="warning" style={{ color: warningColor }}>
+            {warning}
+          </span>
+        )}
+        <TextArea
+          style={style}
+          title={disabled ? disabledReason : ""}
+          disabled={disabled}
+          value={value}
+          onChange={onChange}
+          placeholder="Full Email with Headers."
+        />
 
-      {secret && (
-        <div className="secret">Hover to reveal public info sent to chain</div>
-      )}
-    </LabeledTextAreaContainer>
-  );
-};
+        {secret && (
+          <div className="secret">Hover to reveal public info sent to chain</div>
+        )}
+      </LabeledTextAreaContainer>
+    );
+  };
 
-const Label = styled.label`
-  color: rgba(255, 255, 255, 0.8);
-`;
+
 
 const LabeledTextAreaContainer = styled(Col)`
-  height: 15vh;
+  height: 160px;
   border-radius: 4px;
   position: relative;
   gap: 8px;
@@ -67,8 +62,9 @@ const LabeledTextAreaContainer = styled(Col)`
   }
   .secret {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: calc(100% - 42px);
+    height: 120px;
+    padding:20px;
     background: #171717;
     border: 1px dashed rgba(255, 255, 255, 0.5);
     color: rgba(255, 255, 255, 0.8);
@@ -79,6 +75,7 @@ const LabeledTextAreaContainer = styled(Col)`
     display: flex;
     align-items: center;
     transition: opacity 0.3s ease-in-out;
+    flex-wrap:wrap;
   }
   &:hover .secret,
   & :focus + .secret {
@@ -96,4 +93,5 @@ const TextArea = styled.textarea`
 	resize: none;
   &:hover {
 		border: 1px solid rgba(255, 255, 255, 0.8);
+  }
 `;
