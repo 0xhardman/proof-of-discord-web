@@ -186,7 +186,7 @@ export const MainPage: React.FC<{}> = (props) => {
                 rel="noreferrer"
               >
                 password reset email
-              </a>
+              </a>{" "}
               from Twitter. (Reminder: Twitter name with emoji might fail to
               pass DKIM verification)
             </NumberedStep>
