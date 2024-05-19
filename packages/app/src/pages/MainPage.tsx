@@ -4,10 +4,11 @@ import { useMount, useUpdateEffect } from "react-use";
 import styled from "styled-components";
 import _ from "lodash";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { rawEmailToBuffer } from "@zk-email/helpers/dist/input-helpers";
 import {
-  rawEmailToBuffer,
-} from "@zk-email/helpers/dist/input-helpers";
-import { verifyDKIMSignature, DKIMVerificationResult } from "@zk-email/helpers/dist/dkim";
+  verifyDKIMSignature,
+  DKIMVerificationResult,
+} from "@zk-email/helpers/dist/dkim";
 import {
   downloadProofFiles,
   generateProof,
@@ -123,11 +124,11 @@ export const MainPage: React.FC<{}> = (props) => {
       // TODO: handle errors
     },
   });
-  console.log(config)
+  console.log(config);
 
-  const { isConnected } = useAccount()
+  const { isConnected } = useAccount();
 
-  console.log(isConnected, '---isConnected')
+  console.log(isConnected, "---isConnected");
 
   const { data, isLoading, isSuccess, write } = useContractWrite(config);
 
@@ -175,39 +176,52 @@ export const MainPage: React.FC<{}> = (props) => {
     switch (step) {
       case 0:
         return (
-          <ContentContainer> <NumberedStep step={1}>
-            Send yourself a{" "}
-            <a
-              href="https://twitter.com/account/begin_password_reset"
-              target="_blank"
-              rel="noreferrer"
-            >
-              password reset email
-            </a>{" "}
-            from Twitter. (Reminder: Twitter name with emoji might fail to pass DKIM verification)
-          </NumberedStep>
-            <Button onClick={() => setStep(step + 1)}>I received the reset email, next</Button>
+          <ContentContainer>
+            {" "}
+            <NumberedStep step={1}>
+              Send yourself a{" "}
+              <a
+                href="https://twitter.com/account/begin_password_reset"
+                target="_blank"
+                rel="noreferrer"
+              >
+                password reset email
+              </a>{" "}
+              from Discord. (Reminder: Discord name with emoji might fail to
+              pass DKIM verification)
+            </NumberedStep>
+            <Button onClick={() => setStep(step + 1)}>
+              I received the reset email, next
+            </Button>
           </ContentContainer>
-        )
+        );
       case 1:
         return (
           <ContentContainer>
             <NumberedStep step={2}>
-              In your inbox, find the email from Twitter and click the three dot
-              menu, then "Show original" then "Copy to clipboard". If on Outlook,
-              download the original email as .eml and copy it instead.
+              In your inbox, find the email from Discord and click the three dot
+              menu, then "Show original" then "Copy to clipboard". If on
+              Outlook, download the original email as .eml and copy it instead.
             </NumberedStep>
-            <Button onClick={() => setStep(step + 1)}>I got the information, next</Button>
+            <Button onClick={() => setStep(step + 1)}>
+              I got the information, next
+            </Button>
           </ContentContainer>
-        )
+        );
       case 2:
         return (
           <ContentContainer>
             <NumberedStep step={3}>
-              Copy paste or drop that into the box below. Note that we cannot use this to phish you: we do not know your password, and we never get this email info because we have no server at all. We are actively searching for a less sketchy email.
+              Copy paste or drop that into the box below. Note that we cannot
+              use this to phish you: we do not know your password, and we never
+              get this email info because we have no server at all. We are
+              actively searching for a less sketchy email.
             </NumberedStep>
-            <div id='input-area'>
-              <div id="input-file">  <DragAndDropTextBox onFileDrop={onFileDrop} /></div>
+            <div id="input-area">
+              <div id="input-file">
+                {" "}
+                <DragAndDropTextBox onFileDrop={onFileDrop} />
+              </div>
               <div id="input-or">OR</div>
               <div id="input-email">
                 <LabeledTextArea
@@ -215,19 +229,24 @@ export const MainPage: React.FC<{}> = (props) => {
                   onChange={(e) => {
                     setEmailFull(e.currentTarget.value);
                   }}
-                /></div>
-
+                />
+              </div>
             </div>
-            <Button disabled={emailFull.length === 0} onClick={() => setStep(step + 1)}>I have upload the information, next</Button>
-
+            <Button
+              disabled={emailFull.length === 0}
+              onClick={() => setStep(step + 1)}
+            >
+              I have upload the information, next
+            </Button>
           </ContentContainer>
-        )
+        );
       case 3:
         return (
           <ContentContainer>
             <NumberedStep step={4}>
-              Paste in your sending Ethereum address. This ensures that no one else
-              can "steal" your proof for another account (frontrunning protection!).
+              Paste in your sending Ethereum address. This ensures that no one
+              else can "steal" your proof for another account (frontrunning
+              protection!).
             </NumberedStep>
             <SingleLineInput
               label="Ethereum Address"
@@ -236,16 +255,27 @@ export const MainPage: React.FC<{}> = (props) => {
                 setEthereumAddress(e.currentTarget.value);
               }}
             />
-            <Button disabled={ethereumAddress.length === 0} onClick={() => setStep(step + 1)}>I pasted the Ethereum address, next</Button>
+            <Button
+              disabled={ethereumAddress.length === 0}
+              onClick={() => setStep(step + 1)}
+            >
+              I pasted the Ethereum address, next
+            </Button>
           </ContentContainer>
-        )
+        );
       case 4:
         return (
           <ContentContainer>
             <NumberedStep step={5}>
               Click <b>"Prove"</b>. Note it is completely client side and{" "}
-              <a href="https://github.com/zkemail/proof-of-twitter/" target="_blank" rel="noreferrer">open source</a>,
-              and no server ever sees your private information.
+              <a
+                href="https://github.com/zkemail/proof-of-twitter/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                open source
+              </a>
+              , and no server ever sees your private information.
             </NumberedStep>
             <Button
               data-testid="prove-button"
@@ -262,7 +292,10 @@ export const MainPage: React.FC<{}> = (props) => {
                   setDisplayMessage("Generating proof...");
                   setStatus("generating-input");
 
-                  input = await generateTwitterVerifierCircuitInputs(emailBuffer, ethereumAddress);
+                  input = await generateTwitterVerifierCircuitInputs(
+                    emailBuffer,
+                    ethereumAddress
+                  );
 
                   console.log("Generated input:", JSON.stringify(input));
                 } catch (e) {
@@ -284,7 +317,7 @@ export const MainPage: React.FC<{}> = (props) => {
                     import.meta.env.VITE_CIRCUIT_ARTIFACTS_URL,
                     CIRCUIT_NAME,
                     () => {
-                      console.log('downloading')
+                      console.log("downloading");
                       setDownloadProgress((p) => p + 1);
                     }
                   );
@@ -314,8 +347,12 @@ export const MainPage: React.FC<{}> = (props) => {
                 //   import.meta.env.VITE_CIRCUIT_ARTIFACTS_URL,
                 //   CIRCUIT_NAME
                 // );
-                const proof = JSON.parse('{"pi_a": ["19201501460375869359786976350200749752225831881815567077814357716475109214225", "11505143118120261821370828666956392917988845645366364291926723724764197308214", "1"], "pi_b": [["17114997753466635923095897108905313066875545082621248342234075865495571603410", "7192405994185710518536526038522451195158265656066550519902313122056350381280"], ["13696222194662648890012762427265603087145644894565446235939768763001479304886", "2757027655603295785352548686090997179551660115030413843642436323047552012712"], ["1", "0"]], "pi_c": ["6168386124525054064559735110298802977718009746891233616490776755671099515304", "11077116868070103472532367637450067545191977757024528865783681032080180232316", "1"], "protocol": "groth16", "curve": "bn128"}');
-                const publicSignals = JSON.parse('["0", "0", "0", "0", "0", "0", "0", "0", "32767059066617856", "30803244233155956", "0", "0", "0", "0", "27917065853693287", "28015", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "113659471951225", "0", "0", "1634582323953821262989958727173988295", "1938094444722442142315201757874145583", "375300260153333632727697921604599470", "1369658125109277828425429339149824874", "1589384595547333389911397650751436647", "1428144289938431173655248321840778928", "1919508490085653366961918211405731923", "2358009612379481320362782200045159837", "518833500408858308962881361452944175", "1163210548821508924802510293967109414", "1361351910698751746280135795885107181", "1445969488612593115566934629427756345", "2457340995040159831545380614838948388", "2612807374136932899648418365680887439", "16021263889082005631675788949457422", "299744519975649772895460843780023483", "3933359104846508935112096715593287", "556307310756571904145052207427031380052712977221"]');
+                const proof = JSON.parse(
+                  '{"pi_a": ["19201501460375869359786976350200749752225831881815567077814357716475109214225", "11505143118120261821370828666956392917988845645366364291926723724764197308214", "1"], "pi_b": [["17114997753466635923095897108905313066875545082621248342234075865495571603410", "7192405994185710518536526038522451195158265656066550519902313122056350381280"], ["13696222194662648890012762427265603087145644894565446235939768763001479304886", "2757027655603295785352548686090997179551660115030413843642436323047552012712"], ["1", "0"]], "pi_c": ["6168386124525054064559735110298802977718009746891233616490776755671099515304", "11077116868070103472532367637450067545191977757024528865783681032080180232316", "1"], "protocol": "groth16", "curve": "bn128"}'
+                );
+                const publicSignals = JSON.parse(
+                  '["0", "0", "0", "0", "0", "0", "0", "0", "32767059066617856", "30803244233155956", "0", "0", "0", "0", "27917065853693287", "28015", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "113659471951225", "0", "0", "1634582323953821262989958727173988295", "1938094444722442142315201757874145583", "375300260153333632727697921604599470", "1369658125109277828425429339149824874", "1589384595547333389911397650751436647", "1428144289938431173655248321840778928", "1919508490085653366961918211405731923", "2358009612379481320362782200045159837", "518833500408858308962881361452944175", "1163210548821508924802510293967109414", "1361351910698751746280135795885107181", "1445969488612593115566934629427756345", "2457340995040159831545380614838948388", "2612807374136932899648418365680887439", "16021263889082005631675788949457422", "299744519975649772895460843780023483", "3933359104846508935112096715593287", "556307310756571904145052207427031380052712977221"]'
+                );
                 console.log("Finished proof generation");
                 console.timeEnd("zk-gen");
                 recordTimeForActivity("finishedProving");
@@ -353,11 +390,11 @@ export const MainPage: React.FC<{}> = (props) => {
             </Button>
             {displayMessage ===
               "Downloading compressed proving files... (this may take a few minutes)" && (
-                <ProgressBar
-                  width={downloadProgress * 10}
-                  label={`${downloadProgress} / 10 items`}
-                />
-              )}
+              <ProgressBar
+                width={downloadProgress * 10}
+                label={`${downloadProgress} / 10 items`}
+              />
+            )}
             <ProcessStatus status={status}>
               {status !== "not-started" ? (
                 <div>
@@ -369,18 +406,17 @@ export const MainPage: React.FC<{}> = (props) => {
               )}
               <TimerDisplay timers={stopwatch} />
             </ProcessStatus>
-
-          </ContentContainer >
-
-        )
+          </ContentContainer>
+        );
       case 5:
         return (
           <ContentContainer>
             <NumberedStep step={6}>
-              Click <b>"Verify"</b> and then <b>"Mint Twitter Badge On-Chain"</b>,
-              and approve to mint the NFT badge that proves Twitter ownership! Note
-              that it is 700K gas right now so only feasible on Sepolia, though we
-              intend to reduce this soon.
+              Click <b>"Verify"</b> and then{" "}
+              <b>"Mint Discord Badge On-Chain"</b>, and approve to mint the NFT
+              badge that proves Discord ownership! Note that it is 700K gas
+              right now so only feasible on Sepolia, though we intend to reduce
+              this soon.
             </NumberedStep>
             <div id="input-area">
               <div id="input-file">
@@ -421,7 +457,14 @@ export const MainPage: React.FC<{}> = (props) => {
                   const res = true;
                   setVerificationMessage("Passed!");
                   setVerificationPassed(ok);
-                  console.log('verify pass', write, isSuccess, isLoading, verificationPassed, data);
+                  console.log(
+                    "verify pass",
+                    write,
+                    isSuccess,
+                    isLoading,
+                    verificationPassed,
+                    data
+                  );
                   // console.log(res);
                   // if (!res) throw Error("Verification failed!");
                   // setVerificationMessage("Passed!");
@@ -435,7 +478,7 @@ export const MainPage: React.FC<{}> = (props) => {
               Verify
             </Button>
             <Button
-              disabled={!verificationPassed || isLoading || isSuccess || !write}
+              disabled={!verificationPassed || isLoading || isSuccess}
               onClick={async () => {
                 setStatus("sending-on-chain");
                 write?.();
@@ -444,12 +487,12 @@ export const MainPage: React.FC<{}> = (props) => {
               {isSuccess
                 ? "Successfully sent to chain!"
                 : isLoading
-                  ? "Confirm in wallet"
-                  : !write
-                    ? "Connect Wallet first, scroll to top!"
-                    : verificationPassed
-                      ? "Mint Twitter badge on-chain"
-                      : "Verify first, before minting on-chain!"}
+                ? "Confirm in wallet"
+                : write
+                ? "Connect Wallet first, scroll to top!"
+                : verificationPassed
+                ? "Mint Discord badge on-chain"
+                : "Verify first, before minting on-chain!"}
             </Button>
             {isSuccess && (
               <div>
@@ -460,11 +503,11 @@ export const MainPage: React.FC<{}> = (props) => {
               </div>
             )}
           </ContentContainer>
-        )
+        );
       default:
         return null;
     }
-  }
+  };
 
   return (
     <Container>
@@ -474,9 +517,8 @@ export const MainPage: React.FC<{}> = (props) => {
         />
       )}
       <div className="title">
-        <Header>Proof of Twitter: ZK Email Demo</Header>
+        <Header>Proof of Discord: ZK Email Demo</Header>
       </div>
-
 
       <Col
         style={{
@@ -496,27 +538,20 @@ export const MainPage: React.FC<{}> = (props) => {
           will allow you to generate zero knowledge proofs proving you received
           some email and mask out any private data, without trusting our server
           to keep your privacy. This demo is just one use case that lets you
-          prove you own a Twitter username on-chain, by verifying confirmation
-          emails (and their normally-hidden headers) from Twitter.
-          Visit <a href="https://prove.email/blog/zkemail">our blog</a>{" "}or{" "}
+          prove you own a Discord username on-chain, by verifying confirmation
+          emails (and their normally-hidden headers) from Discord.
+          {/* Visit <a href="https://prove.email/blog/zkemail">our blog</a>{" "}or{" "}
           <a href="https://prove.email">website</a>{" "}to learn more about ZK Email,
-          and find the technical details on how this demo is built{" "}
-          <a href="https://prove.email/blog/twitter">here</a>.
+          and find the technical details on how this demo is built{" "} */}
+          {/* <a href="https://prove.email/blog/twitter">here</a>. */}
           <br />
           <br />
-          If you wish to generate a ZK proof of Twitter badge (NFT), you must:
+          If you wish to generate a ZK proof of Discord badge (NFT), you must:
         </span>
 
-
-
-        {
-          <Content />
-        }
-
+        {<Content />}
       </Col>
-      <Main>
-
-      </Main>
+      <Main></Main>
     </Container>
   );
 };
@@ -571,13 +606,10 @@ const Header = styled.span`
   letter-spacing: -0.02em;
 `;
 
-
-
 const Main = styled(Row)`
   width: 100%;
   gap: 1rem;
 `;
-
 
 const Container = styled.div`
   display: flex;
@@ -637,31 +669,30 @@ const Container = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  width:500px;
+  width: 500px;
 
-  & > #input-area{
-    width:100%;
-    display:flex;
-    flex-direction:row;
-    margin-top:20px;
+  & > #input-area {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
 
-    & > #input-file{
-      width:45%;
-      height:170px;
+    & > #input-file {
+      width: 45%;
+      height: 170px;
     }
 
-    & >#input-or{
-      display:flex;
-      align-items:center;
-      justify-content:center;
+    & > #input-or {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.5rem;
       margin: 0 1rem;
     }
 
-    & > #input-email{
-      width:45%;
-      height:170px;
+    & > #input-email {
+      width: 45%;
+      height: 170px;
     }
   }
-
-`
+`;
