@@ -187,7 +187,7 @@ export const MainPage: React.FC<{}> = (props) => {
               >
                 password reset email
               </a>{" "}
-              from Twitter. (Reminder: Twitter name with emoji might fail to
+              from Discord. (Reminder: Discord name with emoji might fail to
               pass DKIM verification)
             </NumberedStep>
             <Button onClick={() => setStep(step + 1)}>
@@ -199,7 +199,7 @@ export const MainPage: React.FC<{}> = (props) => {
         return (
           <ContentContainer>
             <NumberedStep step={2}>
-              In your inbox, find the email from Twitter and click the three dot
+              In your inbox, find the email from Discord and click the three dot
               menu, then "Show original" then "Copy to clipboard". If on
               Outlook, download the original email as .eml and copy it instead.
             </NumberedStep>
@@ -413,8 +413,8 @@ export const MainPage: React.FC<{}> = (props) => {
           <ContentContainer>
             <NumberedStep step={6}>
               Click <b>"Verify"</b> and then{" "}
-              <b>"Mint Twitter Badge On-Chain"</b>, and approve to mint the NFT
-              badge that proves Twitter ownership! Note that it is 700K gas
+              <b>"Mint Discord Badge On-Chain"</b>, and approve to mint the NFT
+              badge that proves Discord ownership! Note that it is 700K gas
               right now so only feasible on Sepolia, though we intend to reduce
               this soon.
             </NumberedStep>
@@ -478,7 +478,7 @@ export const MainPage: React.FC<{}> = (props) => {
               Verify
             </Button>
             <Button
-              disabled={!verificationPassed || isLoading || isSuccess || !write}
+              disabled={!verificationPassed || isLoading || isSuccess}
               onClick={async () => {
                 setStatus("sending-on-chain");
                 write?.();
@@ -488,10 +488,10 @@ export const MainPage: React.FC<{}> = (props) => {
                 ? "Successfully sent to chain!"
                 : isLoading
                 ? "Confirm in wallet"
-                : !write
+                : write
                 ? "Connect Wallet first, scroll to top!"
                 : verificationPassed
-                ? "Mint Twitter badge on-chain"
+                ? "Mint Discord badge on-chain"
                 : "Verify first, before minting on-chain!"}
             </Button>
             {isSuccess && (
@@ -517,7 +517,7 @@ export const MainPage: React.FC<{}> = (props) => {
         />
       )}
       <div className="title">
-        <Header>Proof of Twitter: ZK Email Demo</Header>
+        <Header>Proof of Discord: ZK Email Demo</Header>
       </div>
 
       <Col
@@ -538,15 +538,15 @@ export const MainPage: React.FC<{}> = (props) => {
           will allow you to generate zero knowledge proofs proving you received
           some email and mask out any private data, without trusting our server
           to keep your privacy. This demo is just one use case that lets you
-          prove you own a Twitter username on-chain, by verifying confirmation
-          emails (and their normally-hidden headers) from Twitter. Visit{" "}
-          <a href="https://prove.email/blog/zkemail">our blog</a> or{" "}
-          <a href="https://prove.email">website</a> to learn more about ZK
-          Email, and find the technical details on how this demo is built{" "}
-          <a href="https://prove.email/blog/twitter">here</a>.
+          prove you own a Discord username on-chain, by verifying confirmation
+          emails (and their normally-hidden headers) from Discord.
+          {/* Visit <a href="https://prove.email/blog/zkemail">our blog</a>{" "}or{" "}
+          <a href="https://prove.email">website</a>{" "}to learn more about ZK Email,
+          and find the technical details on how this demo is built{" "} */}
+          {/* <a href="https://prove.email/blog/twitter">here</a>. */}
           <br />
           <br />
-          If you wish to generate a ZK proof of Twitter badge (NFT), you must:
+          If you wish to generate a ZK proof of Discord badge (NFT), you must:
         </span>
 
         {<Content />}
